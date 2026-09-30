@@ -1,0 +1,5 @@
+file,property,raw,processed
+fake_01.flac,Channels,1,1
+fake_01.flac,Sample rate (Hz),16000,16000
+fake_01.flac,Peak amplitude,1,1
+fake_01.flac,Duration (s),4.35,4.35

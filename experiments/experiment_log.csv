@@ -1,0 +1,8 @@
+experiment_id,experiment_name,purpose,status,week1_output
+1,Clean audio baseline,Establish baseline behavior on standard audio,Planned,Method defined
+2,Background noise,Measure robustness to noisy audio,Planned,Method defined
+3,Compression,Measure robustness to compressed audio,Planned,Method defined
+4,Telephone-like degradation,Simulate call-channel conditions,Planned,Method defined
+5,Short audio clips,Study effect of shorter segments,Planned,Method defined
+6,Unseen speakers,Test generalization to speakers not used for training,Planned,Method defined
+7,Cross-dataset testing,Measure transfer to a different dataset,Planned,Method defined

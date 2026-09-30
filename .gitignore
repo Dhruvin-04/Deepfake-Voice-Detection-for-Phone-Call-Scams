@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.env
+.env.*
+
+# Local datasets / raw audio
+*.flac
+*.wav
+*.mp3
+*.m4a
+*.ogg
+DF-keys-full/
+dataset/
+datasets/
+data/raw/
+data/processed/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Model artifacts generated locally
+*.pkl
+*.pickle
+*.joblib
+*.npy
+*.npz
+
+# Do NOT ignore small documentation / CSV deliverables
+# CSV files such as dataset_statistics.csv and experiment_log.csv
+# are intentionally tracked.

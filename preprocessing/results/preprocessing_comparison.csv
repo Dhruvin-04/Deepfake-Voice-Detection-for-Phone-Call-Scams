@@ -1,0 +1,5 @@
+file,property,raw,processed
+cc1.mp3,Channels,1,1
+cc1.mp3,Sample rate (Hz),8000,16000
+cc1.mp3,Peak amplitude,0.953,1
+cc1.mp3,Duration (s),836.21,836.21
