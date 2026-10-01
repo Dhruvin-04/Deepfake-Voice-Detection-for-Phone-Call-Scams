@@ -2,7 +2,7 @@ experiment_id,experiment_name,purpose,status,result_summary
 1,Clean audio baseline,Establish baseline behavior on standard audio,Completed,"MFCC + XGBoost baseline: Accuracy=0.7636, Precision=0.8226, Recall=0.6623, F1=0.7338, ROC-AUC=0.8625; Test segments=313; Confusion Matrix=[[137,22],[52,102]]"
 2,Background noise,Measure robustness to noisy audio,Planned,Method defined
 3,Compression,Measure robustness to compressed audio,Planned,Method defined
-4,Telephone-like degradation,Simulate call-channel conditions,Planned,Method defined
+4,Telephone-like degradation,Simulate call-channel conditions,Completed,"Clean vs phone-like XGBoost: Clean Accuracy=0.7636 Precision=0.8226 Recall=0.6623 F1=0.7338 ROC-AUC=0.8625 EER=0.2172; Phone-like Accuracy=0.4888 Precision=0.4904 Recall=0.9935 F1=0.6567 ROC-AUC=0.6105 EER=0.4026; 313 test segments"
 5,Short audio clips,Study effect of shorter segments,Planned,Method defined
 6,Unseen speakers,Test generalization to speakers not used for training,Planned,Method defined
 7,Cross-dataset testing,Measure transfer to a different dataset,Planned,Method defined
