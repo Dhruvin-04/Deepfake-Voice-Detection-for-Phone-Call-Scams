@@ -85,7 +85,7 @@ XGBoost Classifier
     |
     v
 REAL / FAKE Prediction
-```
+
 Pipeline Stages
 
 1. Audio Input
