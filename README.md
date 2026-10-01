@@ -1,5 +1,3 @@
-
-````markdown
 # Deepfake Voice Detection for Phone Call Scams
 
 ## 📌 Project Overview
@@ -16,7 +14,7 @@ The current development milestone focuses on implementing and evaluating an init
 
 ## 🎯 Problem Statement
 
-AI-based voice cloning and speech synthesis technologies can generate highly realistic human-like speech using a relatively small amount of voice data. This creates a security risk when cloned voices are used in phone scams, such as impersonating family members, friends, or other trusted individuals.
+AI-based voice cloning and speech synthesis technologies can generate highly realistic human-like speech. This creates a security risk when cloned voices are used in phone scams, such as impersonating family members, friends, or other trusted individuals.
 
 Traditional spam and caller-identification systems primarily analyze the **phone number or caller metadata** and do not determine whether the actual voice is authentic.
 
@@ -87,61 +85,54 @@ XGBoost Classifier
     |
     v
 REAL / FAKE Prediction
-````
+```
+Pipeline Stages
 
-### Pipeline Stages
-
-**1. Audio Input**
+1. Audio Input
 
 The system receives an audio file for analysis. Live phone-call integration is planned for a later stage.
 
-**2. Audio Preprocessing**
+2. Audio Preprocessing
 
 The current preprocessing stage converts audio to mono, resamples it to 16 kHz, normalizes the signal, and prepares it for segmentation.
 
-**3. Audio Segmentation**
+3. Audio Segmentation
 
-Speech is divided into non-overlapping **3-second segments**. Audio shorter than 3 seconds is zero-padded, while final partial segments are also zero-padded.
+Speech is divided into non-overlapping 3-second segments.
+
+Audio shorter than 3 seconds is zero-padded. A final partial segment is also zero-padded.
 
 The 3-second duration is an initial experimental setting and is not considered an optimal final value.
 
-**4. Feature Extraction**
+4. Feature Extraction
 
-The current baseline extracts **40 MFCC coefficients** from each 3-second segment and represents each segment using the mean and standard deviation of the MFCC features.
+The current baseline extracts 40 MFCC coefficients from each 3-second segment and represents each segment using the mean and standard deviation of the MFCC features.
 
-This produces an **80-dimensional feature vector**.
+This produces an 80-dimensional feature vector.
 
-**5. Model**
+5. Model
 
-The current baseline classifier is **XGBoost**.
+The current baseline classifier is XGBoost.
 
-**6. Prediction**
+6. Prediction
 
-The current inference pipeline produces a prediction of:
+The current inference pipeline produces:
 
-```text
 REAL
-```
 
 or
 
-```text
 FAKE
-```
 
 along with a probability score.
 
----
+📊 Dataset
+ASVspoof 2019 Logical Access
 
-## 📊 Dataset
-
-### ASVspoof 2019 Logical Access
-
-The current MFCC + XGBoost baseline uses the **ASVspoof 2019 Logical Access (LA)** dataset.
+The current MFCC + XGBoost baseline uses the ASVspoof 2019 Logical Access (LA) dataset.
 
 The official dataset splits are kept separate:
 
-```text
 ASVspoof 2019 LA Train
         |
         v
@@ -156,66 +147,50 @@ ASVspoof 2019 LA Evaluation
         |
         v
 Test
-```
-
-### Label Mapping
-
-```text
+Label Mapping
 bonafide -> REAL -> 0
 spoof    -> FAKE -> 1
-```
-
-### Controlled Development Subset
+Controlled Development Subset
 
 A controlled subset is currently used for development:
 
-```text
 Training   : 500 REAL + 500 FAKE source files
 Validation : 100 REAL + 100 FAKE source files
 Test       : 100 REAL + 100 FAKE source files
-```
 
 The controlled test subset produces:
 
-```text
 313 three-second test segments
 159 REAL segments
 154 FAKE segments
-```
 
 The same source files are not shared between the training, validation, and test subsets.
 
----
-
-## ASVspoof 2021 DF
+ASVspoof 2021 DF
 
 ASVspoof 2021 DF Part00 has also been prepared as a separate dataset for later evaluation.
 
 It is kept separate from the current ASVspoof 2019 LA baseline experiment.
 
-The 2021 DF dataset is planned for future **held-out / cross-dataset evaluation** and is not used to train the current baseline model.
+The 2021 DF dataset is planned for future held-out / cross-dataset evaluation and is not used to train the current baseline model.
 
----
-
-## 🎧 Audio Preprocessing
+🎧 Audio Preprocessing
 
 The current preprocessing pipeline is:
 
-```text
 Load
   |
   v
 Mono Conversion
   |
   v
-Resampling to 16 kHz
+Resample to 16 kHz
   |
   v
-Normalization
+Normalize
   |
   v
 3-second Segmentation
-```
 
 Audio shorter than 3 seconds is zero-padded.
 
@@ -223,30 +198,23 @@ Longer audio is divided into non-overlapping 3-second segments, with the final p
 
 Denoising support is available in the preprocessing module, but it is disabled for the current baseline experiment.
 
----
+🎵 MFCC Feature Extraction
 
-## 🎵 MFCC Feature Extraction
+The current baseline uses MFCC acoustic features:
 
-The current baseline uses MFCC acoustic features.
-
-```text
 Sampling Rate : 16 kHz
 MFCCs         : 40
 Aggregation   : Mean + Standard Deviation
 Final Features: 80
-```
 
 The resulting feature vector is used as the input to the XGBoost classifier.
 
----
+🤖 Current Baseline Model
 
-## 🤖 Current Baseline Model
-
-The current classifier is **XGBoost**.
+The current classifier is XGBoost.
 
 The baseline configuration is:
 
-```text
 n_estimators      = 200
 max_depth         = 4
 learning_rate     = 0.05
@@ -255,88 +223,65 @@ colsample_bytree  = 0.9
 objective         = binary:logistic
 eval_metric       = logloss
 random_state      = 42
-```
 
-This is an **initial baseline model** and is not the final model of the project.
+This is an initial baseline model, not the final model of the project.
 
----
+📈 Current Baseline Results
 
-## 📈 Current Baseline Results
+The first controlled ASVspoof 2019 LA baseline experiment was evaluated on 313 test segments.
 
-The first controlled ASVspoof 2019 LA baseline experiment was evaluated on **313 test segments**.
-
-### Results
-
-| Metric    | Result |
-| --------- | -----: |
-| Accuracy  | 76.36% |
-| Precision | 82.26% |
-| Recall    | 66.23% |
-| F1-score  | 73.38% |
-| ROC-AUC   | 86.25% |
-| EER       | 21.72% |
-
-### Confusion Matrix
-
-```text
+Results
+Metric	Result
+Accuracy	76.36%
+Precision	82.26%
+Recall	66.23%
+F1-score	73.38%
+ROC-AUC	86.25%
+EER	21.72%
+Confusion Matrix
 [[137, 22],
  [ 52,102]]
-```
 
-These are **preliminary development results** from the current baseline experiment and may change as the project progresses.
+These are preliminary development results from the current baseline experiment and may change as the project progresses.
 
----
-
-## 📞 Phone-like Robustness Experiment
+📞 Phone-like Robustness Experiment
 
 An initial robustness experiment has been implemented to study the effect of a simulated telephone-style audio condition.
 
 The transformation currently uses:
 
-```text
 Resampling to 8 kHz
         +
 Approximately 300-3400 Hz bandwidth limitation
         +
 Resampling back to 16 kHz
-```
 
-The same trained XGBoost model is evaluated on the transformed audio **without retraining**.
+The same trained XGBoost model is evaluated on the transformed audio without retraining.
 
-### Current Comparison
-
-| Condition  | Accuracy | Precision | Recall | F1-score | ROC-AUC |    EER |
-| ---------- | -------: | --------: | -----: | -------: | ------: | -----: |
-| Clean      |   76.36% |    82.26% | 66.23% |   73.38% |  86.25% | 21.72% |
-| Phone-like |   48.88% |    49.04% | 99.35% |   65.67% |  61.05% | 40.26% |
+Current Comparison
+Condition	Accuracy	Precision	Recall	F1-score	ROC-AUC	EER
+Clean	76.36%	82.26%	66.23%	73.38%	86.25%	21.72%
+Phone-like	48.88%	49.04%	99.35%	65.67%	61.05%	40.26%
 
 The initial experiment indicates that the current baseline is affected by the simulated phone-call-like condition.
 
-This is an **initial robustness experiment**. More realistic channel conditions and additional robustness experiments are planned for later stages.
+This is an initial robustness experiment. More realistic channel conditions and additional robustness experiments are planned for later stages.
 
----
-
-## 🧪 Current Experiment Status
-
-| Experiment                 | Status      |
-| -------------------------- | ----------- |
-| Clean audio baseline       | ✅ Completed |
-| Background noise           | 🔜 Planned  |
-| Compression                | 🔜 Planned  |
-| Telephone-like degradation | ✅ Completed |
-| Short audio clips          | 🔜 Planned  |
-| Unseen speakers            | 🔜 Planned  |
-| Cross-dataset testing      | 🔜 Planned  |
-
----
-
-## 💻 Live Prediction Demo
+🧪 Current Experiment Status
+Experiment	Status
+Clean audio baseline	✅ Completed
+Background noise	🔜 Planned
+Compression	🔜 Planned
+Telephone-like degradation	✅ Completed
+Short audio clips	🔜 Planned
+Unseen speakers	🔜 Planned
+Cross-dataset testing	🔜 Planned
+💻 Live Prediction Demo
 
 A command-line inference demo is currently implemented.
 
 The current demo performs:
 
-```text
 Input Audio
     |
     v
@@ -356,23 +301,16 @@ Segment Predictions
     |
     v
 Overall REAL / FAKE Result
-```
 
 Example command:
 
-```bash
 python -m models.xgboost.predict_xgboost "/path/to/audio.flac"
-```
 
 The demo reports the prediction and fake probability for each segment and also produces an overall prediction.
 
-The current demo is intended for **development and demonstration purposes** and is not the final application.
+The current demo is intended for development and demonstration purposes and is not the final application.
 
----
-
-## 📁 Current Project Structure
-
-```text
+📁 Current Project Structure
 Deepfake-Voice-Detection/
 |
 ├── data/
@@ -407,110 +345,85 @@ Deepfake-Voice-Detection/
 ├── requirements.txt
 ├── dataset_plan.md
 └── README.md
-```
 
 Large raw audio datasets and generated model/feature artifacts are kept outside the Git repository.
 
----
-
-## 📊 Evaluation Metrics
+📊 Evaluation Metrics
 
 The current evaluation framework includes:
 
-* Accuracy
-* Precision
-* Recall
-* F1-score
-* ROC-AUC
-* Equal Error Rate (EER)
-* Confusion Matrix
+Accuracy
+Precision
+Recall
+F1-score
+ROC-AUC
+Equal Error Rate (EER)
+Confusion Matrix
 
 Future experiments may also study robustness under:
 
-* Background noise
-* Audio compression
-* Different sampling rates
-* Unseen speakers
-* Unseen synthetic voice-generation methods
-* Different speaking conditions
-* Cross-dataset evaluation
-
----
-
-## 📦 Current Deliverables
+Background noise
+Audio compression
+Different sampling rates
+Unseen speakers
+Unseen synthetic voice-generation methods
+Different speaking conditions
+Cross-dataset evaluation
+📦 Current Deliverables
 
 The current development milestone includes:
 
-### 1. Dataset Preparation
+1. Dataset Preparation
+Dataset organization and metadata preparation.
+Dataset label verification.
+Controlled train, validation, and test subsets.
+2. Audio Preprocessing Module
+Mono conversion.
+Resampling.
+Normalization.
+3-second segmentation.
+Zero-padding.
+3. Feature Extraction Module
+MFCC extraction.
+Mean and standard deviation aggregation.
+80-dimensional feature vectors.
+4. Baseline Detection Model
+XGBoost training.
+Trained baseline model.
+Prediction pipeline.
+5. Model Evaluation
+Accuracy.
+Precision.
+Recall.
+F1-score.
+ROC-AUC.
+EER.
+Confusion matrix.
+6. Robustness Experiment
+Simulated phone-call-like audio transformation.
+Clean vs phone-like comparison.
+7. Live Demonstration
+Individual audio-file prediction using the trained baseline.
 
-* Dataset organization and metadata preparation.
-* Dataset label verification.
-* Controlled train, validation, and test subsets.
+These represent the current development milestone, not the final project deliverables.
 
-### 2. Audio Preprocessing Module
-
-* Mono conversion.
-* Resampling.
-* Normalization.
-* 3-second segmentation.
-* Zero-padding.
-
-### 3. Feature Extraction Module
-
-* MFCC extraction.
-* Mean and standard deviation aggregation.
-* 80-dimensional feature vectors.
-
-### 4. Baseline Detection Model
-
-* XGBoost training.
-* Saved trained baseline model.
-* Prediction pipeline.
-
-### 5. Model Evaluation
-
-* Accuracy.
-* Precision.
-* Recall.
-* F1-score.
-* ROC-AUC.
-* EER.
-* Confusion matrix.
-
-### 6. Robustness Experiment
-
-* Simulated phone-call-like audio transformation.
-* Clean vs phone-like comparison.
-
-### 7. Live Demonstration
-
-* Individual audio-file prediction using the trained baseline.
-
-These represent the **current development milestone**, not the final project deliverables.
-
----
-
-## ⚠️ Current Limitations
+⚠️ Current Limitations
 
 The current implementation has several limitations:
 
-* Controlled subset size is currently used for development.
-* The current detector uses MFCC + XGBoost as a baseline.
-* The 3-second segmentation duration is an initial experimental choice.
-* Only an initial phone-like robustness condition has been evaluated.
-* The phone-call condition is simulated rather than collected from real telephone networks.
-* ASVspoof 2021 DF cross-dataset evaluation is still pending.
-* Stronger deep-learning models have not yet been implemented.
-* A final real-time phone-call system has not yet been developed.
-* The current command-line demo is not a production application.
-
----
-
-## 🚀 Planned Future Work
+Controlled subset size is currently used for development.
+The current detector uses MFCC + XGBoost as a baseline.
+The 3-second segmentation duration is an initial experimental choice.
+Only an initial phone-like robustness condition has been evaluated.
+The phone-call condition is simulated rather than collected from real telephone networks.
+ASVspoof 2021 DF cross-dataset evaluation is still pending.
+Stronger deep-learning models have not yet been implemented.
+A final real-time phone-call system has not yet been developed.
+The current command-line demo is not a production application.
+🚀 Planned Future Work
 
 Future stages of the project may include:
 
-```text
 Larger-scale experiments
         |
         v
@@ -530,78 +443,62 @@ Prototype application
         |
         v
 Future real-time integration
-```
 
 Potential advanced approaches may include CNN-based architectures, RawNet2, AASIST, and other suitable audio anti-spoofing methods.
 
-These approaches are **planned future work and are not represented as completed in the current milestone**.
+These approaches are planned future work and are not represented as completed in the current milestone.
 
----
+👥 Team Members
+Sr. No.	Name	Current Responsibility
+1	M1	Dataset preparation and metadata
+2	M2	Audio preprocessing and segmentation
+3	M3	MFCC feature extraction and XGBoost baseline
+4	M4	Evaluation and experiment analysis
 
-## 👥 Team Members
+Replace M1, M2, M3, and M4 with the actual team member names before the final project submission.
 
-| Sr. No. | Name | Current Responsibility                       |
-| ------: | ---- | -------------------------------------------- |
-|       1 | M1  | Dataset preparation and metadata             |
-|       2 | M2  | Audio preprocessing and segmentation         |
-|       3 | M3  | MFCC feature extraction and XGBoost baseline |
-|       4 | M4  | Evaluation and experiment analysis           |
-
-
-
----
-
-## 🛠️ Technology Stack
-
-### Current Baseline
-
-* **Python**
-* **NumPy**
-* **Pandas**
-* **SciPy**
-* **Librosa**
-* **SoundFile**
-* **Scikit-learn**
-* **XGBoost**
-* **Git**
-* **GitHub**
-
-### Planned Future Technologies
+🛠️ Technology Stack
+Current Baseline
+Python
+NumPy
+Pandas
+SciPy
+Librosa
+SoundFile
+Scikit-learn
+XGBoost
+Git
+GitHub
+Planned Future Technologies
 
 Depending on later project requirements, the project may also use:
 
-* PyTorch
-* CNN-based architectures
-* RawNet2
-* AASIST
-* FastAPI
-* React / Next.js
-* GPU-based experimentation
+PyTorch
+CNN-based architectures
+RawNet2
+AASIST
+FastAPI
+React / Next.js
+GPU-based experimentation
 
-These technologies are listed as **future/planned components unless already implemented in the repository**.
+These are listed as future/planned components unless implemented in a later project milestone.
 
----
-
-## 🌐 Future Scope
+🌐 Future Scope
 
 Possible future extensions include:
 
-* Real-time call audio analysis.
-* Telecom or VoIP integration.
-* Lightweight on-device inference.
-* Detection under network compression and packet loss.
-* Speaker verification.
-* Scam-intent detection from call transcripts.
-* Multimodal scam detection.
-* Mobile application integration.
-
----
-
-## 📚 Research Direction
+Real-time call audio analysis.
+Telecom or VoIP integration.
+Lightweight on-device inference.
+Detection under network compression and packet loss.
+Speaker verification.
+Scam-intent detection from call transcripts.
+Multimodal scam detection.
+Mobile application integration.
+📚 Research Direction
 
 The project is being developed in stages:
 
-```text
 Baseline Detector
        ↓
 Robustness Experiments
@@ -615,18 +512,11 @@ Model Improvement
 Prototype Application
        ↓
 Future Real-Time System
-```
 
 The current repository represents an intermediate development milestone rather than the final research system.
 
----
+⚠️ Disclaimer
 
-## ⚠️ Disclaimer
-
-This project is a **research and development prototype** for studying the detection of potentially synthetic or manipulated speech.
+This project is a research and development prototype for studying the detection of potentially synthetic or manipulated speech.
 
 A model prediction should not be treated as definitive proof that a caller is fraudulent. Detection performance may vary depending on audio quality, compression, background noise, speaker characteristics, channel conditions, spoofing methods, and previously unseen voice-generation techniques.
-
-
-
-After that, **don't edit anything else yet**. Tell me once the GitHub commit is done, and we'll update `requirements.txt` next.
