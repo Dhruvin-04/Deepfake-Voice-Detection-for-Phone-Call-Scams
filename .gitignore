@@ -39,3 +39,4 @@ Thumbs.db
 # Do NOT ignore small documentation / CSV deliverables
 # CSV files such as dataset_statistics.csv and experiment_log.csv
 # are intentionally tracked.
+artifacts/
