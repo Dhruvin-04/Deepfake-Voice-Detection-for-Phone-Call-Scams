@@ -1,0 +1,7 @@
+Experiment 001: MFCC + XGBoost
+Test samples: 313
+Accuracy: 0.763578
+Precision: 0.822581
+Recall: 0.662338
+F1-score: 0.733813
+ROC-AUC: 0.862534

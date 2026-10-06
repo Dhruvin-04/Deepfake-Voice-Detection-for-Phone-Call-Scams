@@ -38,8 +38,13 @@ from features.extract_mfcc import extract_mfcc, SAMPLE_RATE, N_MFCC
 from features.aggregate_mfcc import aggregate_mfcc
 
 
-MODEL_PATH = Path(
-    "D:/data/week2_controlled/models/xgboost_baseline.json"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+MODEL_PATH = (
+    REPO_ROOT
+    / "models"
+    / "xgboost"
+    / "xgboost_baseline.json"
 )
 
 
