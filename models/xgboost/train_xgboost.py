@@ -4,27 +4,32 @@ train_xgboost.py
 Experiment 001: MFCC + XGBoost Baseline
 
 Training data:
-    D:/data/week2_controlled/features/train/
+    <work-root>/features/train/
 
 Validation data:
-    D:/data/week2_controlled/features/validation/
+    <work-root>/features/validation/
 
 Test data:
-    D:/data/week2_controlled/features/test/
+    <work-root>/features/test/
 
 The test set is loaded only for final evaluation.
 """
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import numpy as np
 from xgboost import XGBClassifier
 
 
-FEATURE_ROOT = Path("D:/data/week2_controlled/features")
-MODEL_ROOT = Path("D:/data/week2_controlled/models")
+WORK_ROOT = Path(
+    os.getenv("DEEPFAKE_WORK_ROOT", "artifacts")
+)
+
+FEATURE_ROOT = WORK_ROOT / "features"
+MODEL_ROOT = WORK_ROOT / "models"
 MODEL_PATH = MODEL_ROOT / "xgboost_baseline.json"
 
 

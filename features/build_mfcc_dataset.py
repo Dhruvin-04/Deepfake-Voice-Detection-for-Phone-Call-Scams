@@ -1,7 +1,7 @@
 """
 build_mfcc_dataset.py
 
-Convert the verified 3-second WAV segments into fixed-length MFCC features.
+Convert verified 3-second WAV segments into fixed-length MFCC features.
 
 Pipeline:
     3-second WAV
@@ -12,19 +12,21 @@ Pipeline:
         ->
     80-dimensional feature vector
 
-Outputs are written outside the Git repository to:
-    D:/data/week2_controlled/features/
+The segment manifest stores relative paths such as:
 
-For each split:
-    X_<split>.npy
-    y_<split>.npy
+    processed/train/REAL/example.wav
 
-A metadata CSV is also produced so every feature row can be traced
-back to its segment, source file, speaker, and label.
+The actual processed-data location is supplied at runtime.
+
+Outputs:
+    X.npy
+    y.npy
+    metadata.csv
 """
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 
 import numpy as np
@@ -35,12 +37,26 @@ from .aggregate_mfcc import aggregate_mfcc
 
 
 MANIFEST = Path("data/metadata/segment_metadata.csv")
-OUTPUT_ROOT = Path("D:/data/week2_controlled/features")
 
 SPLITS = ("train", "validation", "test")
 
 
-def build_split(df: pd.DataFrame, split: str) -> None:
+def resolve_segment_path(segment_path: str, processed_root: Path) -> Path:
+    path = Path(str(segment_path))
+
+    if path.is_absolute():
+        return path
+
+    return processed_root / path
+
+
+def build_split(
+    df: pd.DataFrame,
+    split: str,
+    processed_root: Path,
+    output_root: Path,
+) -> None:
+
     split_df = df[df["split"] == split].copy().reset_index(drop=True)
 
     if split_df.empty:
@@ -52,7 +68,11 @@ def build_split(df: pd.DataFrame, split: str) -> None:
     print(f"\nProcessing {split.upper()}: {len(split_df)} segments")
 
     for index, row in enumerate(split_df.itertuples(index=False), start=1):
-        audio_path = Path(row.segment_path)
+
+        audio_path = resolve_segment_path(
+            row.segment_path,
+            processed_root,
+        )
 
         if not audio_path.exists():
             raise FileNotFoundError(
@@ -77,7 +97,7 @@ def build_split(df: pd.DataFrame, split: str) -> None:
 
         metadata_rows.append(
             {
-                "segment_path": str(audio_path),
+                "segment_path": str(row.segment_path),
                 "source_filename": row.source_filename,
                 "label": int(row.label),
                 "class_name": row.class_name,
@@ -92,13 +112,14 @@ def build_split(df: pd.DataFrame, split: str) -> None:
     X = np.stack(features).astype(np.float32)
     y = split_df["label"].to_numpy(dtype=np.int64)
 
-    output_dir = OUTPUT_ROOT / split
+    output_dir = output_root / split
     output_dir.mkdir(parents=True, exist_ok=True)
 
     np.save(output_dir / "X.npy", X)
     np.save(output_dir / "y.npy", y)
 
     metadata_output = output_dir / "metadata.csv"
+
     pd.DataFrame(metadata_rows).to_csv(
         metadata_output,
         index=False,
@@ -114,12 +135,49 @@ def build_split(df: pd.DataFrame, split: str) -> None:
 
 
 def main() -> None:
-    if not MANIFEST.exists():
+
+    parser = argparse.ArgumentParser(
+        description="Build MFCC feature datasets from processed audio segments."
+    )
+
+    parser.add_argument(
+        "--processed-root",
+        required=True,
+        help=(
+            "Root directory containing the processed folder. "
+            "Example: /path/to/processed-data-root"
+        ),
+    )
+
+    parser.add_argument(
+        "--output-root",
+        default="artifacts/features",
+        help="Directory where generated feature files are written.",
+    )
+
+    parser.add_argument(
+        "--manifest",
+        default=str(MANIFEST),
+        help="Path to the segment metadata CSV.",
+    )
+
+    args = parser.parse_args()
+
+    manifest = Path(args.manifest)
+    processed_root = Path(args.processed_root)
+    output_root = Path(args.output_root)
+
+    if not manifest.exists():
         raise FileNotFoundError(
-            f"Segment manifest not found: {MANIFEST}"
+            f"Segment manifest not found: {manifest}"
         )
 
-    df = pd.read_csv(MANIFEST)
+    if not processed_root.exists():
+        raise FileNotFoundError(
+            f"Processed-data root not found: {processed_root}"
+        )
+
+    df = pd.read_csv(manifest)
 
     required = {
         "segment_path",
@@ -138,7 +196,12 @@ def main() -> None:
         )
 
     for split in SPLITS:
-        build_split(df, split)
+        build_split(
+            df,
+            split,
+            processed_root,
+            output_root,
+        )
 
     print("\nMFCC dataset creation complete.")
 

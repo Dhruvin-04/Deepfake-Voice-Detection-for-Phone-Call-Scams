@@ -1,11 +1,26 @@
 import csv
+import os
 from pathlib import Path
 
 from preprocessing.robustness.simulate_phone_call import simulate_phone_call
 
 
 TEST_CSV = Path("data/splits/test.csv")
-INPUT_DIR = Path(r"D:\data\ASVspoof2019\LA\ASVspoof2019_LA_eval\flac")
+
+DATASET_ROOT = os.getenv("ASVSPOOF2019_LA_ROOT")
+
+if not DATASET_ROOT:
+    raise RuntimeError(
+        "ASVSPOOF2019_LA_ROOT is not set. "
+        "Set it to the local ASVspoof2019 LA dataset root."
+    )
+
+INPUT_DIR = (
+    Path(DATASET_ROOT)
+    / "ASVspoof2019_LA_eval"
+    / "flac"
+)
+
 OUTPUT_DIR = Path("data/robustness/phone_like")
 OUTPUT_CSV = Path("data/metadata/phone_test.csv")
 

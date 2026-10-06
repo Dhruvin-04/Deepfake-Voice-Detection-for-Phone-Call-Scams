@@ -6,6 +6,7 @@ Compare the existing XGBoost baseline on:
 2. Phone-like transformed versions of the same test source files
 """
 
+import os
 from pathlib import Path
 
 import numpy as np
@@ -22,13 +23,22 @@ from sklearn.metrics import (
 from xgboost import XGBClassifier
 
 
-MODEL_PATH = Path("D:/data/week2_controlled/models/xgboost_baseline.json")
+WORK_ROOT = Path(
+    os.getenv("DEEPFAKE_WORK_ROOT", "artifacts")
+)
 
-CLEAN_X = Path("D:/data/week2_controlled/features/test/X.npy")
-CLEAN_Y = Path("D:/data/week2_controlled/features/test/y.npy")
+MODEL_PATH = Path(
+    os.getenv(
+        "XGBOOST_MODEL_PATH",
+        "models/xgboost/xgboost_baseline.json",
+    )
+)
 
-PHONE_X = Path("D:/data/week2_controlled/features/phone_like_test/X.npy")
-PHONE_Y = Path("D:/data/week2_controlled/features/phone_like_test/y.npy")
+CLEAN_X = WORK_ROOT / "features" / "test" / "X.npy"
+CLEAN_Y = WORK_ROOT / "features" / "test" / "y.npy"
+
+PHONE_X = WORK_ROOT / "features" / "phone_like_test" / "X.npy"
+PHONE_Y = WORK_ROOT / "features" / "phone_like_test" / "y.npy"
 
 OUTPUT_DIR = Path("experiments/robustness")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

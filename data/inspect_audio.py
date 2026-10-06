@@ -1,20 +1,8 @@
 from pathlib import Path
-import soundfile as sf
+import argparse
 import csv
 
-# Path to the extracted ASVspoof 2021 DF audio folder
-AUDIO_DIR = Path(
-    r"D:\data\ASVspoof2021_DF"
-    r"\ASVspoof2021_DF_eval_part00"
-    r"\ASVspoof2021_DF_eval"
-    r"\flac"
-)
-
-# Number of files to inspect
-NUM_FILES = 20
-
-# Output CSV file
-OUTPUT_CSV = Path(r"D:\data\ASVspoof2021_DF\audio_inspection.csv")
+import soundfile as sf
 
 
 def inspect_audio(file_path):
@@ -32,15 +20,50 @@ def inspect_audio(file_path):
 
 
 def main():
-    if not AUDIO_DIR.exists():
-        print(f"ERROR: Audio directory not found:\n{AUDIO_DIR}")
+    parser = argparse.ArgumentParser(
+        description="Inspect ASVspoof 2021 DF audio files."
+    )
+    parser.add_argument(
+        "--dataset-root",
+        required=True,
+        help="Path to ASVspoof2021_DF root directory."
+    )
+    parser.add_argument(
+        "--num-files",
+        type=int,
+        default=20,
+        help="Number of FLAC files to inspect."
+    )
+    parser.add_argument(
+        "--output-csv",
+        default="data/audio_inspection.csv",
+        help="Output CSV path."
+    )
+
+    args = parser.parse_args()
+
+    base_dir = Path(args.dataset_root)
+
+    audio_dir = (
+        base_dir
+        / "ASVspoof2021_DF_eval_part00"
+        / "ASVspoof2021_DF_eval"
+        / "flac"
+    )
+
+    output_csv = Path(args.output_csv)
+
+    if not audio_dir.exists():
+        print(f"ERROR: Audio directory not found:\n{audio_dir}")
         return
 
-    audio_files = sorted(AUDIO_DIR.glob("*.flac"))[:NUM_FILES]
+    audio_files = sorted(audio_dir.glob("*.flac"))[:args.num_files]
 
     if not audio_files:
         print("ERROR: No FLAC files found.")
         return
+
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
 
     results = []
 
@@ -64,7 +87,6 @@ def main():
         except Exception as e:
             print(f"ERROR reading {file_path.name}: {e}")
 
-    # Save results to CSV
     if results:
         fieldnames = [
             "filename",
@@ -75,13 +97,13 @@ def main():
             "subtype",
         ]
 
-        with open(OUTPUT_CSV, "w", newline="", encoding="utf-8") as f:
+        with output_csv.open("w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(results)
 
-        print(f"\nInspection complete.")
-        print(f"Results saved to:\n{OUTPUT_CSV}")
+        print("\nInspection complete.")
+        print(f"Results saved to:\n{output_csv}")
 
 
 if __name__ == "__main__":

@@ -10,13 +10,19 @@ Output:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pandas as pd
 
 
 METADATA_PATH = Path("data/metadata/dataset_metadata.csv")
-PROCESSED_ROOT = Path("D:/data/week2_controlled/processed")
+
+WORK_ROOT = Path(
+    os.getenv("DEEPFAKE_WORK_ROOT", "artifacts")
+)
+
+PROCESSED_ROOT = WORK_ROOT / "processed"
 OUTPUT_PATH = Path("data/metadata/segment_metadata.csv")
 
 
@@ -71,7 +77,9 @@ def main() -> None:
 
             rows.append(
                 {
-                    "segment_path": str(segment_path),
+                    "segment_path": segment_path.relative_to(
+                        WORK_ROOT
+                    ).as_posix(),
                     "source_filename": source_filename,
                     "label": int(source.label),
                     "class_name": source.class_name,

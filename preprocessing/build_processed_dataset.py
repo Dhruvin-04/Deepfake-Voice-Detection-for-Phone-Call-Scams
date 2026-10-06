@@ -15,6 +15,7 @@ The original train/validation/test split is preserved.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -22,7 +23,15 @@ import pandas as pd
 from .segment_audio import process_file
 
 
-BASE_DIR = Path("D:/data/ASVspoof2019/LA")
+DATASET_ROOT = os.getenv("ASVSPOOF2019_LA_ROOT")
+
+if not DATASET_ROOT:
+    raise RuntimeError(
+        "ASVSPOOF2019_LA_ROOT is not set. "
+        "Set it to the local ASVspoof2019 LA dataset root."
+    )
+
+BASE_DIR = Path(DATASET_ROOT)
 
 AUDIO_DIRS = {
     "train": BASE_DIR / "ASVspoof2019_LA_train" / "flac",
@@ -36,7 +45,11 @@ SPLIT_FILES = {
     "test": Path("data/splits/test.csv"),
 }
 
-OUTPUT_ROOT = Path("D:/data/week2_controlled/processed")
+WORK_ROOT = Path(
+    os.getenv("DEEPFAKE_WORK_ROOT", "artifacts")
+)
+
+OUTPUT_ROOT = WORK_ROOT / "processed"
 
 
 def process_split(split: str) -> None:

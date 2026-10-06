@@ -16,6 +16,7 @@ Pipeline:
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import numpy as np
@@ -26,8 +27,19 @@ from .aggregate_mfcc import aggregate_mfcc
 
 
 MANIFEST = Path("data/metadata/phone_segment_metadata.csv")
-SEGMENT_DIR = Path("data/processed/phone_like_test")
-OUTPUT_DIR = Path("D:/data/week2_controlled/features/phone_like_test")
+
+SEGMENT_DIR = Path(
+    os.getenv(
+        "PHONE_SEGMENT_ROOT",
+        "data/processed/phone_like_test",
+    )
+)
+
+WORK_ROOT = Path(
+    os.getenv("DEEPFAKE_WORK_ROOT", "artifacts")
+)
+
+OUTPUT_DIR = WORK_ROOT / "features" / "phone_like_test"
 
 
 def main():

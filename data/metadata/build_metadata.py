@@ -11,10 +11,19 @@ are automatically excluded.
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 
 
-BASE_DIR = Path("D:/data/ASVspoof2019/LA")
+DATASET_ROOT = os.getenv("ASVSPOOF2019_LA_ROOT")
+
+if not DATASET_ROOT:
+    raise RuntimeError(
+        "ASVSPOOF2019_LA_ROOT is not set. "
+        "Set it to the local ASVspoof2019 LA dataset root."
+    )
+
+BASE_DIR = Path(DATASET_ROOT)
 
 PROTOCOLS = {
     "train": BASE_DIR
